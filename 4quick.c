@@ -8,23 +8,23 @@ void swap(int *a, int *b){
     *b = temp;
 }
 
-int partition(int arr[], int lb, int ub){
-    int pivot = arr[ub];
-    int i=lb;
-
-    while(i<ub){
-        while(arr[i] < pivot) i++;
+int partition(int *arr,int lb, int ub){
+    int pivot = arr[lb];
+    int p=lb;
+    while(lb<ub){
+        while(arr[lb] <= pivot) lb++;
         while(arr[ub] > pivot) ub--;
 
-        if(i<ub) swap(&arr[i], &arr[ub]);
+        if(lb<ub) swap( &arr[lb], &arr[ub]);
     }
-    swap(&arr[i], &arr[ub]);
-    return i;
+    swap( &arr[p], &arr[ub]);
+
+    return ub;
 }
 
-void quicksort(int arr[], int lb, int ub){
+void quicksort(int *arr, int lb, int ub){
     if(lb<ub){
-        int pivot = partition(arr, lb,  ub);
+        int pivot = partition(arr, lb,ub);
         quicksort(arr, lb, pivot-1);
         quicksort(arr, pivot+1, ub);
     }
@@ -60,3 +60,5 @@ int main(){
 
     return 0;
 }
+
+//Time Complexity: O(n log n) on average and O(n^2) in worst case
