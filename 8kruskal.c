@@ -1,83 +1,76 @@
 #include<stdio.h>
+#include<stdlib.h>
+#define INF 9999
 
-#define MAX 10
-#define INF 999
+int kruskal(int **arr, int n){
+    // Implementation of Kruskal's algorithm
 
-int parent[MAX];
-
-// Find parent
-int find(int i) {
-    while(parent[i]) {
-        i = parent[i];
+    int parent[n];
+    for(int i=0;i<n;i++) parent[i]=0;
+    int find(int i){
+        while(parent[i]) i=parent[i];
+        return i;
     }
-    return i;
-}
+    int uni(int i, int j){
+        parent[i]=j;
+    }
 
-// Union of two vertices
-void uni(int i, int j) {
-    parent[j] = i;
-}
-
-int main() {
-    int cost[MAX][MAX];
-    int n;
-
-    int mincost = 0;
-    int edges = 1;
-
-    printf("Enter the no. of vertices\n");
-    scanf("%d", &n);
-
-    printf("\nEnter the cost adjacency matrix\n");
-
-    // Read matrix
-    for(int i = 0; i < n; i++) {
-        for(int j = 0; j < n; j++) {
-            scanf("%d", &cost[i][j]);
-            // Replace 0 with INF
-            if(cost[i][j] == 0) {
-                cost[i][j] = INF;
-            }
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            if(arr[i][j] ==0) arr[i][j] = INF;
         }
     }
+    int edges=0; int mincost=0;
 
-    printf("\nThe edges of Minimum Cost Spanning Tree are\n\n");
+    while(edges < n-1){
+        int min=INF;
+        int u=-1, v=-1, a=-1, b=-1;
 
-    while(edges < n) {
-        int min = INF;
-        int a = -1;
-        int b = -1;
-        int u = -1;
-        int v = -1;
-
-        // Find minimum edge
-        for(int i = 0; i < n; i++) {
-            for(int j = 0; j < n; j++) {
-                if(cost[i][j] < min) {
-                    min = cost[i][j];
-                    a = u = i;
-                    b = v = j;
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){
+                if(arr[i][j] < min){
+                    min=arr[i][j];
+                    a=u=i; b=v=j;
                 }
             }
         }
 
-        // Find parents
-        u = find(u);
-        v = find(v);
+        u=find(u);
+        v=find(v);
 
-        // If no cycle
-        if(u != v) {
-            printf("%d edge (%d,%d) =%d\n",
-                   edges++, a + 1, b + 1, min);
+        if(u!=v){
+            uni(u,v);
+            printf("Edge %d: (%d, %d) cost: %d\n", edges, a, b, min);
             mincost += min;
-            uni(u, v);
+            edges++;
         }
 
-        // Remove edge
-        cost[a][b] = cost[b][a] = INF;
+        arr[a][b] = arr[b][a] = INF;
+    }
+    return mincost;
+}
+int main(){
+    int n;
+    printf("Enter the number of vertices: ");
+    scanf("%d", &n);
+
+    int **arr = (int **)malloc(n * sizeof(int *));
+    for(int i=0; i<n; i++){
+        arr[i] = (int *)malloc(n * sizeof(int));
     }
 
-    printf("\nMinimum cost = %d", mincost);
+    printf("Enter the adjacency matrix:\n");
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            scanf("%d", &arr[i][j]);
+        }
+    }
 
-    return 0;
+    int mincost = kruskal(arr, n);
+    printf("Minimum cost of the spanning tree: %d\n", mincost);
+
+    for(int i=0; i<n; i++){
+        free(arr[i]);
+    }
+    free(arr);
 }
