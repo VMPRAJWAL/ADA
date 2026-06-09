@@ -1,27 +1,24 @@
-#include<stdlib.h>
 #include<stdio.h>
+#include<stdlib.h>
 #include<time.h>
 
-void merge(int arr[], int temp[], int lb, int mid, int ub){
-    int i=lb, j=mid+1, k=lb;
+void merge(int *arr, int *temp, int lb, int mid, int ub){
+    int i=lb, k=lb, j=mid+1;
 
-    while(i<=mid && j<=ub){
-        if(arr[i]<arr[j]) temp[k++]=arr[i++];
-        else temp[k++]=arr[j++];
+    while(i<mid && j<ub){
+        if(arr[i] > arr[j]) temp[k++] = arr[j++];
+        else temp[k++] = arr[i++]; 
     }
 
-    while(i <= mid)
-        temp[k++] = arr[i++];
-    while(j <= ub)
-        temp[k++] = arr[j++];
+    while(i<= mid) temp[k++] = arr[i++];
 
-    for(i=lb; i<=ub; i++){
-        arr[i]=temp[i];
-    }
+    while(j<= ub) temp[k++] = arr[j++];
+
+    for(int a=0; a<ub; a++) arr[a] = temp[a];
 }
 
-void mergesort(int arr[], int temp[], int lb, int ub){
-    int mid = lb+(ub-lb)/2;
+void mergesort(int *arr, int *temp, int lb, int ub){
+    int mid = lb + ((ub-lb)/2);
     if(lb<ub){
         mergesort(arr, temp, lb, mid);
         mergesort(arr, temp, mid+1, ub);
@@ -29,36 +26,33 @@ void mergesort(int arr[], int temp[], int lb, int ub){
     }
 }
 
-int main(){
-    int n;
-    printf("Enter n value: ");
+void main(){
+    int n; 
+    printf("Enter the number of elements: ");
     scanf("%d", &n);
-    int *arr = malloc(sizeof(int)*n);
-    int *temp = malloc(sizeof(int)*n);
 
-    clock_t start, end;
+    int *arr = (int*)malloc(sizeof(int) * n);
+    int *temp = (int*)malloc(sizeof(int) * n);
+    
+    printf("Array before Sorting: \n");
     for(int i=0; i<n; i++){
-        arr[i]= rand()%100000;
+        arr[i] = rand()%100000;
+        printf("%d ", arr[i]);
     }
-    printf("The Random Numbers are:\n");
+
+    clock_t a,b;
+
+    a= clock();
+    mergesort(arr, temp, 0, n);
+    b=clock();
+
+    printf("\nSorted array: \n");
     for(int i=0; i<n; i++){
-        printf("%d ",arr[i]);
+        printf("%d ", arr[i]);
     }
-    printf("\n");
 
-    start = clock();
-    mergesort(arr,temp, 0, n-1);
-    end = clock();
-
-    printf("Sorted numbers are: \n");
-    for(int i=0; i<n; i++){
-        printf("%d ",arr[i]);
-    }
-    printf("\n");
-
-    printf("Time taken: %lf seconds\n", (double)(end-start)/CLOCKS_PER_SEC);
+    printf("Total Time Taken: %lf \n", (double)(b-a)/CLOCKS_PER_SEC);
 
     free(arr);
     free(temp);
-    return 0;
 }
