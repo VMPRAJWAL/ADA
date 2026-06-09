@@ -2,46 +2,40 @@
 #include<stdlib.h>
 #include<time.h>
 
-void selectionSort(int arr[], int n){
+void selectionsort(int *arr, int n){
     for(int i=0; i<n-1; i++){
-        int minindex= i;
+        int minidx = i;
         for(int j=i+1; j<n; j++){
-            if(arr[j]<minindex){ minindex = j;}
+            if(arr[j] < arr[minidx]){
+                minidx = j;
+            }
         }
-        int temp = arr[minindex];
-        arr[minindex] = arr[i];
-        arr[i] = temp;
+        int temp = arr[i];
+        arr[i]= arr[minidx];
+        arr[minidx] = temp;
     }
 }
 
-void print(int arr[], int n){
-    for(int i=0; i<n; i++){
-        printf("%d ",arr[i]);
-    }
-    printf("\n");
-}
-
-int main(){
+void main(){
     int n;
-    printf("Enter n value: ");
+    printf("Enter the number of elements: ");
     scanf("%d", &n);
-    int *arr = malloc(sizeof(int));
 
-    clock_t start, end;
+    int *arr = (int *)malloc(n * sizeof(int));
+    printf("Enter the elements:\n");
     for(int i=0; i<n; i++){
-        arr[i]= rand()%100000;
+        scanf("%d", &arr[i]);
     }
-    printf("The Random Numbers are:\n");
-    print(arr,n);
 
-    start = clock();
-    selectionSort(arr,n);
-    end = clock();
+    clock_t start = clock();
+    selectionsort(arr, n);
+    clock_t end = clock();
 
-    printf("Sorted numbers are: \n");
-    print(arr,n);
+    printf("Sorted array:\n");
+    for(int i=0; i<n; i++){
+        printf("%d ", arr[i]);
+    }
+    printf("\nTime taken: %lf seconds\n", (double)(end - start) / CLOCKS_PER_SEC);
 
-    return 0;
+    free(arr);
 }
-
-// Time Complexity: O(n^2) in all cases
