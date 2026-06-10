@@ -1,74 +1,62 @@
 #include<stdio.h>
 
-#define INF 999
+#define INF 9999
 
-void dijkstra(int graph[100][100], int n) {
+int* dijkstra(int **graph, int n, int src){
+    int dist[n], visited[n];
+    for(int i=0; i<n; i++){
+        visited[i]=0;
 
-    int dist[100];
-    int visited[100] = {0};
-
-    int source = 0; // first node as source
-
-    // Initialize distances
-    for(int i = 0; i < n; i++) {
-        dist[i] = graph[source][i];
+        if(i!=src && graph[src][i]!=0) dist[i] = graph[src][i];
+        else if(i==src) {dist[i] = 0; visited[i]=1;}
+        else dist[i] = INF;
     }
 
-    visited[source] = 1;
-    dist[source] = 0;
+    for(int count=0; count<n-1; count++){
 
-    // Main logic
-    for(int count = 0; count < n - 1; count++) {
-        int min = INF;
-        int min_index = -1;
-        // Find nearest unvisited vertex
-        for(int i = 0; i < n; i++) {
-            if(!visited[i] && dist[i] < min) {
-                min = dist[i];
-                min_index = i;
+        int min=INF, minidx=-1;
+
+        for(int i=0; i<n; i++){
+            if(!visited[i] && dist[i]<min){
+                min=dist[i];
+                minidx=i;
             }
         }
 
-        visited[min_index] = 1;
-
-        // Update shortest distances
-        for(int i = 0; i < n; i++) {
-            if(!visited[i] &&
-               graph[min_index][i] != INF &&
-               dist[min_index] + graph[min_index][i] < dist[i]) {
-
-                dist[i] = dist[min_index] + graph[min_index][i];
+        visited[minidx]=1;
+        for(int i=0; i<n; i++){
+            if(!visited[i] && graph[minidx][i]!=INF && dist[minidx]!=INF && dist[minidx] + graph[minidx][i] < dist[i]){
+                dist[i] = dist[minidx] + graph[minidx][i];
             }
         }
     }
 
-    // Print result
-    printf("\nShortest distances from source vertex 0:\n");
-
-    for(int i = 0; i < n; i++) {
-        printf("To vertex %d : %d\n", i, dist[i]);
-    }
+    return dist;
 }
 
-int main() {
-
+void main(){
     int n;
     printf("Enter the number of vertices: ");
     scanf("%d", &n);
 
-    int graph[100][100];
-    printf("Enter the adjacency matrix:\n");
-    for(int i = 0; i < n; i++) {
-        for(int j = 0; j < n; j++) {
+    int **graph = (int**)malloc(n*sizeof(int*));
+    for(int i=0; i<n; i++){
+        graph[i] = (int*)malloc(n*sizeof(int));
+        for(int j=0; j<n; j++){
+            printf("Enter the weight of edge from vertex %d to vertex %d (0 if no edge): ", i, j);
             scanf("%d", &graph[i][j]);
-            // Replace 0 with INF except diagonal
-            if(graph[i][j] == 0 && i != j) {
-                graph[i][j] = INF;
-            }
+            if(graph[i][j]==0) graph[i][j]=INF;
         }
     }
 
-    dijkstra(graph, n);
+    int src;
+    printf("Enter the source vertex: ");
+    scanf("%d", &src);
 
-    return 0;
+    int *dist = dijkstra(graph, n, src);
+    printf("Shortest distances from source vertex %d:\n", src);
+    for(int i=0; i<n; i++){
+        printf("Vertex %d: %d\n", i, dist[i]);
+    }
 }
+//Time Complexity: O(n^2) in all cases
